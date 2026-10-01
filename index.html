@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b0920">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="横画面の4レーンを、左から右へ。iPhoneの動きにノーツが応える2Dリズムゲーム。">
+<meta name="description" content="電車の進行方向に合わせて、右・左・上・下へ。iPhoneの動きにノーツが応える2Dリズムゲーム。">
 <title>MOTION BEAT</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0920'/%3E%3Cpath d='M6 8h20M6 16h20M6 24h20' stroke='%23353158' stroke-width='2'/%3E%3Cpath d='M13 5v6m7 2v6m-10 2v6' stroke='%2398a5ff' stroke-width='4'/%3E%3C/svg%3E">
 <style>
@@ -24,6 +24,12 @@ dialog{width:min(650px,calc(100% - 40px));max-height:calc(100dvh - 24px - env(sa
 @media(max-height:370px){.topbar{padding-block:5px}.game-footer{display:none}.start-screen{padding-block:12px}.track-number{margin-bottom:9px}.track-details{margin-top:10px}.lane-preview{margin-top:20px;gap:5px}.flow-label{margin-top:14px}.menu .hint{margin-top:13px}.menu .hint span{margin-top:3px}.menu .primary{min-height:47px}.menu .secondary{margin-top:10px}.result-info{margin-top:9px}.result-grade{font-size:4.2rem}.result[open]{padding-block:14px}.result-badge{margin-bottom:9px}.result-grid{margin-bottom:9px}.result-stat{padding-block:7px}.judgments{padding-block:7px;margin-bottom:10px}}
 @media(orientation:portrait) and (max-width:960px){.rotate-screen{display:flex}.app{visibility:hidden;pointer-events:none}.toast{z-index:45}}
 @media(prefers-reduced-motion:reduce){.judgment{transition:none}.primary:active{transform:none}}
+
+.direction-btn{width:auto;min-width:60px;padding-inline:8px;color:var(--cyan);font-size:.875rem;white-space:nowrap}.direction-control{margin-top:20px}.direction-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.875rem;color:#d4cbdf;margin-bottom:6px}.auto-btn{min-height:34px;background:transparent;border:1px solid #665779;border-radius:6px;font-size:.875rem;padding:3px 12px}.auto-btn[aria-pressed="true"]{background:#302745;border-color:var(--cyan);color:var(--cyan)}.direction-options{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.direction-options button{background:#211b35;border:1px solid #4f4566;border-radius:6px;min-height:40px;font-size:.875rem}.direction-options button[aria-pressed="true"],.direction-cards button[aria-pressed="true"]{background:#373052;border-color:var(--cyan);color:var(--cyan)}.direction-note{margin-top:8px;color:#bdb2cd;font-size:.875rem;line-height:1.4}.direction-intro{font-size:1rem;color:#d5ccdf;margin-bottom:16px}.direction-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.direction-cards button{text-align:left;background:#241e3a;border:1px solid #5c4f77;border-radius:8px;padding:10px 12px;font-size:.875rem;min-height:62px}.direction-cards small{display:block;color:var(--muted);font-size:.75rem;margin-top:4px}.direction-status{font-size:.875rem;color:var(--muted);margin-top:12px}#directionDialog{width:min(620px,calc(100% - 40px))}.countdown{right:0}
+.stage[data-flow="left"] .pads{left:18px;right:auto}.stage[data-flow="left"] .pad{border-left:1px solid #4a4268;border-right:3px solid var(--lane)}.stage[data-flow="left"] .stage-top{left:116px;right:25px}.stage[data-flow="left"] .judgment{left:137px;right:auto;text-align:left}
+.stage[data-flow="up"] .pads,.stage[data-flow="down"] .pads{left:6%;right:6%;width:auto;height:44px;grid-template-rows:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.stage[data-flow="up"] .pads{top:14px;bottom:auto}.stage[data-flow="down"] .pads{top:auto;bottom:14px}.stage[data-flow="up"] .pad{border-left:1px solid #4a4268;border-bottom:3px solid var(--lane)}.stage[data-flow="down"] .pad{border-left:1px solid #4a4268;border-top:3px solid var(--lane)}.stage[data-flow="up"] .stage-top,.stage[data-flow="down"] .stage-top{left:25px;right:25px}.stage[data-flow="up"] .judgment{top:94px;left:0;right:0;transform:none;text-align:center}.stage[data-flow="down"] .judgment{top:auto;bottom:94px;left:0;right:0;transform:none;text-align:center}
+@media(max-width:740px){.hud{gap:9px}.direction-btn{min-width:48px;font-size:.875rem}.topbar{gap:10px}.direction-label{font-size:.875rem}.menu{gap:25px}.direction-note{font-size:.875rem}.direction-control{margin-top:16px}}
+@media(max-height:370px){.menu h2{font-size:clamp(2.4rem,5.5vw,3.3rem)}.track-number{margin-bottom:7px}.track-details{margin-top:9px}.direction-control{margin-top:12px}.direction-label{margin-bottom:4px}.direction-options button{min-height:36px}.direction-note{margin-top:6px}.direction-cards{gap:8px}.direction-cards button{min-height:54px;padding-block:7px}.direction-intro{margin-bottom:10px}.direction-status{margin-top:9px}}
 </style>
 </head>
 <body>
@@ -31,23 +37,24 @@ dialog{width:min(650px,calc(100% - 40px));max-height:calc(100dvh - 24px - env(sa
  <header class="topbar">
   <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><h1>MOTION BEAT</h1></div>
   <div class="trackbar"><div class="track-title">TRANSIT <small>01</small></div><div class="track-meta">120 BPM · EASY</div></div>
-  <div class="hud"><div class="score"><label>SCORE</label><strong id="score">0000000</strong></div><div class="combo"><label>COMBO</label><strong id="combo">0</strong></div><div class="hud-actions"><button class="round-btn" id="pauseBtn" aria-label="一時停止" disabled><svg viewBox="0 0 24 24"><path d="M8 6v12M16 6v12"/></svg></button><button class="round-btn" id="stopBtn" aria-label="プレイを終了" disabled><svg viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button><button class="round-btn" id="aboutBtn" aria-label="遊び方">?</button></div></div>
+  <div class="hud"><div class="score"><label>SCORE</label><strong id="score">0000000</strong></div><div class="combo"><label>COMBO</label><strong id="combo">0</strong></div><div class="hud-actions"><button class="round-btn direction-btn" id="directionBtn" aria-label="進行方向を変更">右へ</button><button class="round-btn" id="pauseBtn" aria-label="一時停止" disabled><svg viewBox="0 0 24 24"><path d="M8 6v12M16 6v12"/></svg></button><button class="round-btn" id="stopBtn" aria-label="プレイを終了" disabled><svg viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button><button class="round-btn" id="aboutBtn" aria-label="遊び方">?</button></div></div>
  </header>
  <div class="progress" id="progressTrack" role="progressbar" aria-label="曲の進行" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progressFill"></i></div>
- <div class="stage" id="stage">
+ <div class="stage" id="stage" data-flow="right">
   <canvas id="gameCanvas" role="img" aria-label="4本の横レーンをノーツが左から右へ流れます。右のラインに重なったら対応するパッドをタップし、長いノーツは押し続けます。"></canvas>
   <div class="stage-top"><span id="inputBadge" class="input-badge">LEFT → RIGHT</span><span id="timeLabel">32 s</span></div>
   <div class="judgment" id="judgment" aria-hidden="true"></div><div class="countdown" id="countdown"></div>
   <div class="pads" id="pads"><button class="pad" data-lane="0" style="--lane:#83e9f4" aria-label="上から1番目のレーン">1<small>D</small></button><button class="pad" data-lane="1" style="--lane:#a1a4ff" aria-label="上から2番目のレーン">2<small>F</small></button><button class="pad" data-lane="2" style="--lane:#e7a3ff" aria-label="上から3番目のレーン">3<small>J</small></button><button class="pad" data-lane="3" style="--lane:#ffb8cf" aria-label="上から4番目のレーン">4<small>K</small></button></div>
   <section class="start-screen" id="startScreen" aria-label="曲をプレイ">
-   <div class="menu"><div class="menu-track"><div class="track-number">TRACK / 01</div><h2>TRANSIT</h2><p class="track-details">ORIGINAL MIX · 120 BPM · 32 SEC</p><div class="lane-preview" aria-hidden="true"><i style="--lane:#83e9f4;--pos:65%"></i><i style="--lane:#a1a4ff;--pos:30%"></i><i style="--lane:#e7a3ff;--pos:79%"></i><i style="--lane:#ffb8cf;--pos:47%"></i></div><p class="flow-label">RHYTHM IN MOTION →</p></div><div class="menu-actions"><button class="primary" id="sensorStart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v14l12-7Z"/></svg>PLAY</button><button class="secondary" id="demoStart">揺れデモで遊ぶ</button><p class="hint">右のラインでタップ＆ホールド<span>PLAYではiPhoneの動きとノーツが連動</span></p></div></div>
+   <div class="menu"><div class="menu-track"><div class="track-number">TRACK / 01</div><h2>TRANSIT</h2><p class="track-details">ORIGINAL MIX · 120 BPM · 32 SEC</p><div class="direction-control"><div class="direction-label"><span>自分から見た進行方向</span><button class="auto-btn" id="autoDirection" aria-pressed="false">自動</button></div><div class="direction-options"><button data-flow-choice="up" aria-label="進行方向を向く。上のラインでタップ" aria-pressed="false">前</button><button data-flow-choice="down" aria-label="進行方向に背を向ける。下のラインでタップ" aria-pressed="false">後</button><button data-flow-choice="left" aria-label="電車が左へ進む。左のラインでタップ" aria-pressed="false">左</button><button data-flow-choice="right" aria-label="電車が右へ進む。右のラインでタップ" aria-pressed="true">右</button></div><p class="direction-note" id="flowHint">左→右・右のラインでタップ</p></div></div><div class="menu-actions"><button class="primary" id="sensorStart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v14l12-7Z"/></svg>PLAY</button><button class="secondary" id="demoStart">揺れデモで遊ぶ</button><p class="hint">判定ラインでタップ＆ホールド<span>PLAYではiPhoneの動きとノーツが連動</span></p></div></div>
   </section>
   <section class="pause-screen" id="pauseScreen" hidden><div class="pause-box"><h2>PAUSED</h2><p id="pauseReason">準備ができたら、続きから。</p><div class="pause-actions"><button class="primary" id="resumeBtn">再開する</button><button class="secondary" id="pauseStop">プレイを終了</button></div></div></section>
  </div>
- <footer class="game-footer"><span>4 LANES / TAP + HOLD　→</span><span>BEST <b id="bestScore">0000000</b></span></footer>
+ <footer class="game-footer"><span id="flowFooter">LEFT → RIGHT / TAP + HOLD</span><span>BEST <b id="bestScore">0000000</b></span></footer>
 </main>
 <section class="rotate-screen" aria-label="横画面でプレイしてください"><div><div class="rotate-brand">MOTION BEAT</div><svg viewBox="0 0 112 96" aria-hidden="true"><rect x="29" y="33" width="72" height="38" rx="7"/><path d="M91 45v13M49 16a29 29 0 0 0-29 29M19 36l1 10 10-2"/><path d="M36 17h13"/></svg><h2>iPhoneを横にしてプレイ</h2><p>縦向きのロックを解除し、<br>画面を横にするとゲームが表示されます。</p></div></section>
-<dialog id="aboutDialog"><div class="dialog-head"><h2>HOW TO PLAY</h2><button class="close-btn" data-close="aboutDialog">閉じる</button></div><div class="how-to"><ol><li>iPhoneを横向きにして、PLAY。初回はモーションへのアクセスを許可してください。</li><li>左から右へ進むノーツが右のラインに重なったら、同じ色のパッドをタップ。</li><li>長いノーツは、後ろの端がラインに届くまで押し続けます。</li></ol><p>まず試すなら「揺れデモで遊ぶ」。PCは D / F / J / K で上から順に操作できます。</p><p>車両の動きの変化を視覚で伝える、<a href="https://www.apple.com/newsroom/2024/05/apple-announces-new-accessibility-features-including-eye-tracking/" target="_blank" rel="noopener noreferrer">Appleの車両モーションキュー</a>の考え方を参考にしています。右向きの加速度ではノーツを右へ、左向きなら左へ寄せ、前後の揺れも軌道に重ねます。判定位置は固定です。</p><p class="note">基本の流れは左→右。一定速度での進行方向は加速度だけでは判別できません。Appleと同じ処理ではなく、酔い軽減効果は未検証です。iPhoneのSafariで開いてください。車内では同乗者だけが使い、違和感があれば中止してください。</p><button class="download-link" id="downloadBtn">HTMLを保存</button></div></dialog>
+<dialog id="directionDialog"><div class="dialog-head"><h2>進行方向</h2><button class="close-btn" data-close="directionDialog">閉じる</button></div><p class="direction-intro">自分から見て、電車が進む向きを選んでください。</p><div class="direction-cards"><button data-flow-choice="up" aria-pressed="false">進行方向を向く<small>下→上 ／ 上でタップ</small></button><button data-flow-choice="down" aria-pressed="false">進行方向に背を向ける<small>上→下 ／ 下でタップ</small></button><button data-flow-choice="left" aria-pressed="false">左に進む<small>右→左 ／ 左でタップ</small></button><button data-flow-choice="right" aria-pressed="true">右に進む<small>左→右 ／ 右でタップ</small></button></div><button class="secondary" id="autoDirectionDialog" aria-pressed="false">GPSとコンパスで自動</button><p class="direction-status" id="directionStatus" role="status">手動で選択中</p></dialog>
+<dialog id="aboutDialog"><div class="dialog-head"><h2>HOW TO PLAY</h2><button class="close-btn" data-close="aboutDialog">閉じる</button></div><div class="how-to"><ol><li>iPhoneを横向きにして、PLAY。初回はモーションへのアクセスを許可してください。</li><li>進行方向に合わせて、ノーツの流れと判定ラインが変わります。同じ色のパッドを、ラインに重なるタイミングでタップ。</li><li>長いノーツは、後ろの端がラインに届くまで押し続けます。</li></ol><p>まず試すなら「揺れデモで遊ぶ」。PCは D / F / J / K で、番号順に操作できます。</p><p>車両の動きの変化を視覚で伝える、<a href="https://www.apple.com/newsroom/2024/05/apple-announces-new-accessibility-features-including-eye-tracking/" target="_blank" rel="noopener noreferrer">Appleの車両モーションキュー</a>の考え方を参考にしています。進行方向に沿ってノーツが流れ、加速度による揺れを軌道に重ねます。選んだ方向では判定位置と音楽のタイミングを保ちます。</p><p class="note">「前」は下→上で上のライン、「後」は上→下で下のライン、「左」は右→左、「右」は左→右です。「自動」は位置情報とコンパスから移動方向を推定します。方向が切り替わると一時停止するので、ラインを確認して再開してください。地下や停車中、コンパスが不安定な車内では方向を手動で選べます。位置情報は端末内で処理します。Appleと同じ処理ではなく、酔い軽減効果は未検証です。iPhoneのSafariで開いてください。車内では同乗者だけが使い、違和感があれば中止してください。</p><button class="download-link" id="downloadBtn">HTMLを保存</button></div></dialog>
 <dialog id="resultDialog" class="result">
  <div class="result-summary"><div class="result-head" id="resultTitle">TRACK COMPLETE</div><div class="result-grade" id="resultGrade">S</div><div class="result-badge" id="resultBadge">FULL COMBO</div><div class="result-score-label">SCORE</div><div class="result-score" id="resultScore">0000000</div><p class="result-info" id="resultInfo"></p></div>
  <div><div class="result-grid"><div class="result-stat"><strong id="resultAccuracy">0%</strong><span>達成率</span></div><div class="result-stat"><strong id="resultCombo">0</strong><span>最大コンボ</span></div></div><div class="judgments"><div style="color:var(--cyan)">PERFECT<b id="resultPerfect">0</b></div><div style="color:var(--accent)">GOOD<b id="resultGood">0</b></div><div style="color:var(--pink)">MISS<b id="resultMiss">0</b></div></div><button class="primary" id="againBtn">もう一度プレイ</button><button class="secondary" id="menuBtn">曲に戻る</button></div>
@@ -75,8 +82,42 @@ window.MotionCore = (()=>{
  function cue(p,w,h,gain,polarity){const dz=v=>Math.abs(v)<.08?0:v;return {x:clamp(Math.tanh(dz(p.x)/3)*w*.12*gain*polarity,-w*.16,w*.16),y:clamp(Math.tanh(dz(p.y)/3)*Math.min(h*.085,52)*gain*polarity,-60,60)};}
  // Natural device axes are rotated into the current display before projection.
  // Notes carry the motion cue; the musical clock and touch targets stay fixed.
- function field(w,h){return {startX:24,judgeX:Math.max(128,w-114),top:14,bottom:h-14,laneHeight:Math.max(1,(h-28)/4)};}
- function point(lane,p,w,h,c,mode){p=clamp(p,-.1,1.14);const f=field(w,h),anchor=Math.pow(1-clamp(p,0,1),2);return {x:f.startX+(f.judgeX-f.startX)*p+(mode==='notes'?c.x*anchor:0),y:f.top+(lane+.5)*f.laneHeight+(mode==='notes'?c.y*anchor:0),scale:1};}
+ function field(w,h,flow='right'){
+  const horizontal=flow==='right'||flow==='left',sign=flow==='right'||flow==='down'?1:-1,size=horizontal?w:h,edge=horizontal?114:76;
+  const start=sign>0?24:size-24,target=sign>0?size-edge:edge,crossStart=horizontal?14:w*.06,laneSize=horizontal?(h-28)/4:w*.88/4;
+  return {horizontal,sign,start,target,length:Math.abs(target-start),crossStart,laneSize,low:horizontal?(sign>0?0:96):(sign>0?14:68),high:horizontal?(sign>0?w-96:w):(sign>0?h-68:h-14)};
+ }
+ const xy=(f,along,across)=>f.horizontal?{x:along,y:across}:{x:across,y:along};
+ function point(lane,p,w,h,c,mode,flow='right'){p=clamp(p,-.1,1.14);const f=field(w,h,flow),anchor=Math.pow(1-clamp(p,0,1),2),pt=xy(f,f.start+(f.target-f.start)*p,f.crossStart+(lane+.5)*f.laneSize);return {x:pt.x+(mode==='notes'?c.x*anchor:0),y:pt.y+(mode==='notes'?c.y*anchor:0),scale:1};}
+ function deviceToWorld(v,pose){
+  const [a,b,g]=[pose.alpha,pose.beta,pose.gamma].map(x=>x*Math.PI/180),ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),cg=Math.cos(g),sg=Math.sin(g);
+  const x=cg*v[0]+sg*v[2],y=v[1],z=-sg*v[0]+cg*v[2],yy=cb*y-sb*z,zz=sb*y+cb*z;
+  return [ca*x-sa*yy,sa*x+ca*yy,zz];
+ }
+ function compassPose(e){
+  if(![e.beta,e.gamma].every(Number.isFinite))return null;
+  if(Number.isFinite(e.webkitCompassHeading)&&e.webkitCompassHeading>=0&&e.webkitCompassHeading<360){
+   if(Number.isFinite(e.webkitCompassAccuracy)&&(e.webkitCompassAccuracy<0||e.webkitCompassAccuracy>40))return null;
+   const b=Math.cos(e.beta*Math.PI/180);if(Math.abs(b)<.15)return null;
+   return {alpha:(b>=0?360-e.webkitCompassHeading:180-e.webkitCompassHeading)+360,beta:e.beta,gamma:e.gamma};
+  }
+  return e.absolute===true&&Number.isFinite(e.alpha)?{alpha:e.alpha,beta:e.beta,gamma:e.gamma}:null;
+ }
+ function relativeCourse(heading,pose,angle){
+  if(!Number.isFinite(heading)||!pose)return {x:0,y:0,valid:false};
+  const r=angle*Math.PI/180,v=deviceToWorld([Math.cos(r),-Math.sin(r),0],pose),length=Math.hypot(v[0],v[1]);if(length<.15)return {x:0,y:0,valid:false};
+  const right=[v[0]/length,v[1]/length,0],forward=cross([0,0,1],right),t=heading*Math.PI/180,travel=[Math.sin(t),Math.cos(t),0];
+  return {x:dot(travel,right),y:-dot(travel,forward),valid:true};
+ }
+ function flowFor(v,current){if(!v.valid)return null;const component={right:v.x,left:-v.x,up:-v.y,down:v.y};if(current&&component[current]>=.62)return current;return Math.abs(v.x)>Math.abs(v.y)?(v.x>=0?'right':'left'):(v.y>=0?'down':'up');}
+ function courseBetween(a,b){
+  if(!a||!b||![a.lat,a.lon,a.accuracy,a.at,b.lat,b.lon,b.accuracy,b.at].every(Number.isFinite))return null;
+  const dt=(b.at-a.at)/1000;if(dt<1||dt>45||a.accuracy>60||b.accuracy>60)return null;
+  const rad=x=>x*Math.PI/180,p1=rad(a.lat),p2=rad(b.lat),dlat=p2-p1,dlon=rad(b.lon-a.lon),k=Math.sin(dlat/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dlon/2)**2,distance=6371000*2*Math.asin(Math.sqrt(clamp(k,0,1)));
+  if(distance<Math.max(15,2*Math.hypot(a.accuracy,b.accuracy))||distance/dt<2)return null;
+  const heading=(Math.atan2(Math.sin(dlon)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dlon))*180/Math.PI+360)%360;
+  return {heading,speed:distance/dt};
+ }
  function chart(level,bars){
   let seed=20261001;const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
   const notes=[],busy=[0,0,0,0],beats=bars*4,step=level==='normal'?.5:1;
@@ -91,7 +132,7 @@ window.MotionCore = (()=>{
  }
  const judge=delta=>Math.abs(delta)<=.07?'perfect':Math.abs(delta)<=.15?'good':null;
  const csvCell=v=>'"'+String(v??'').replaceAll('"','""')+'"';
- return {clamp,project,cue,field,point,chart,judge,csvCell};
+ return {clamp,project,cue,field,xy,point,deviceToWorld,compassPose,relativeCourse,flowFor,courseBetween,chart,judge,csvCell};
 })();
 
 </script>
@@ -100,14 +141,57 @@ window.MotionCore = (()=>{
 'use strict';
 (()=>{
  const C=window.MotionCore,$=id=>document.getElementById(id),colors=['#83e9f4','#a1a4ff','#e7a3ff','#ffb8cf'];
- const SETTINGS=Object.freeze({mode:'notes',flow:'left-to-right',polarity:1,gain:.85,level:'easy',bars:16,mapping:'horizontal',latency:0});
- const state={phase:'idle',source:'demo',mode:'notes',config:SETTINGS,w:844,h:290,cue:{x:0,y:0},projected:{x:0,y:0,valid:true},filtered:{x:0,y:0},sensor:{connected:false,last:0,count:0,raw:[0,0,0],gravity:[0,0,9.81],including:[0,0,0],bias:[0,0,0],quality:'none',hasGravity:false,lp:null,rotation:[0,0,0],interval:0},notes:[],inputs:new Map(),score:0,combo:0,maxCombo:0,perfect:0,good:0,miss:0,best:0,latest:null,hitFx:[],startAt:0,chartTime:0,travel:1.8,lastFrame:0,lastUI:0,judgeUntil:0};
+ const SETTINGS=Object.freeze({mode:'notes',polarity:1,gain:.85,level:'easy',bars:16,mapping:'horizontal',latency:0});
+ const FLOW={right:{button:'右へ',hint:'左→右・右のラインでタップ',english:'LEFT → RIGHT',aria:'ノーツが左から右へ進みます。右のラインで同じ色のパッドをタップ。'},left:{button:'左へ',hint:'右→左・左のラインでタップ',english:'RIGHT → LEFT',aria:'ノーツが右から左へ進みます。左のラインで同じ色のパッドをタップ。'},up:{button:'上へ',hint:'下→上・上のラインでタップ',english:'BOTTOM → TOP',aria:'ノーツが下から上へ進みます。上のラインで同じ色のパッドをタップ。'},down:{button:'下へ',hint:'上→下・下のラインでタップ',english:'TOP → BOTTOM',aria:'ノーツが上から下へ進みます。下のラインで同じ色のパッドをタップ。'}};
+ const state={phase:'idle',source:'demo',flow:'right',mode:'notes',config:SETTINGS,w:844,h:290,cue:{x:0,y:0},projected:{x:0,y:0,valid:true},filtered:{x:0,y:0},nav:{mode:'manual',ready:false,requesting:false,watch:null,pose:null,poseAt:0,heading:null,headingAt:0,fix:null,pending:null,pendingAt:0,message:'手動で選択中'},sensor:{connected:false,last:0,count:0,raw:[0,0,0],gravity:[0,0,9.81],including:[0,0,0],bias:[0,0,0],quality:'none',hasGravity:false,lp:null,rotation:[0,0,0],interval:0},notes:[],inputs:new Map(),score:0,combo:0,maxCombo:0,perfect:0,good:0,miss:0,best:0,latest:null,hitFx:[],startAt:0,chartTime:0,travel:1.8,lastFrame:0,lastUI:0,judgeUntil:0};
  let audio=null,master=null,noiseBuffer=null,scheduler=null,audioStep=0,audioNote=0,wakeLock=null,toastTimer=null;const sources=new Set();
  const canvas=$('gameCanvas'),ctx=canvas.getContext('2d'),pads=[...document.querySelectorAll('.pad')],previewChart=C.chart('easy',16);
  function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500);}
+ const screenAngle=()=>Number(screen.orientation?.angle??window.orientation??0);
  const portraitBlocked=()=>window.matchMedia?.('(orientation: portrait) and (max-width: 960px)')?.matches??false;
  function resize(){const r=$('stage').getBoundingClientRect();state.w=r.width;state.h=r.height;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);if(portraitBlocked())pause('横画面に戻したら、続きから再開できます。');}
  new ResizeObserver(resize).observe($('stage'));window.addEventListener('resize',resize);window.addEventListener('orientationchange',resize);screen.orientation?.addEventListener?.('change',resize);
+ function updateFlowUI(){
+  const info=FLOW[state.flow],n=state.nav;$('stage').dataset.flow=state.flow;$('directionBtn').textContent=info.button;$('directionBtn').setAttribute('aria-label','進行方向を変更。現在は'+info.hint);canvas.setAttribute('aria-label',info.aria);
+  $('flowHint').textContent=(n.mode==='auto'?(n.ready?'自動：':'自動・取得待ち：'):'')+info.hint;$('flowFooter').textContent=info.english+' / TAP + HOLD';$('directionStatus').textContent=n.message;
+  for(const b of document.querySelectorAll('[data-flow-choice]'))b.setAttribute('aria-pressed',String(b.dataset.flowChoice===state.flow));
+  for(const id of ['autoDirection','autoDirectionDialog']){$(id).setAttribute('aria-pressed',String(n.mode==='auto'));$(id).disabled=n.requesting;}
+  const source=state.phase==='idle'?'':state.source==='sensor'?'MOTION / ':'DEMO / ';$('inputBadge').textContent=source+(n.mode==='auto'?(n.ready?'AUTO / ':'AUTO WAIT / '):'')+info.english;
+  pads.forEach((p,i)=>p.setAttribute('aria-label',(state.flow==='right'||state.flow==='left'?'上':'左')+'から'+(i+1)+'番目のレーン'));
+ }
+ function stopAutomatic(){const n=state.nav;if(n.watch!==null){navigator.geolocation?.clearWatch(n.watch);n.watch=null;}window.removeEventListener('deviceorientation',onOrientation);window.removeEventListener('deviceorientationabsolute',onOrientation);n.mode='manual';n.ready=false;n.pose=null;n.heading=null;n.fix=null;n.pending=null;n.message='手動で選択中';updateFlowUI();}
+ function setFlow(flow,automatic=false){
+  if(!FLOW[flow])return;if(!automatic)stopAutomatic();if(flow!==state.flow){if(state.phase==='playing')pause(automatic?'進行方向が変わりました。新しいラインを確認して再開してください。':'新しい判定ラインを確認して、再開してください。');state.flow=flow;state.hitFx=[];state.filtered={x:0,y:0};state.cue={x:0,y:0};$('judgment').classList.remove('on');}
+  updateFlowUI();
+ }
+ for(const b of document.querySelectorAll('[data-flow-choice]'))b.addEventListener('click',()=>{setFlow(b.dataset.flowChoice);$('directionDialog').close();});
+ $('directionBtn').addEventListener('click',()=>{if(state.phase==='playing')pause('進行方向を選んで、続きから再開できます。');$('directionDialog').showModal();});
+ function onOrientation(e){if(state.nav.mode!=='auto')return;const pose=C.compassPose(e);if(pose){state.nav.pose=pose;state.nav.poseAt=performance.now();}else{state.nav.pose=null;state.nav.ready=false;state.nav.message='コンパスを受け取れません。前・後・左・右を選んで遊べます。';}}
+ function onPosition(p){
+  const n=state.nav,c=p.coords;if(n.mode!=='auto'||!c)return;
+  if(![c.latitude,c.longitude,c.accuracy,p.timestamp].every(Number.isFinite)||c.accuracy<0||c.accuracy>75||Date.now()-p.timestamp>20000)return;
+  const fix={lat:c.latitude,lon:c.longitude,accuracy:c.accuracy,at:p.timestamp};
+  if(Number.isFinite(c.speed)&&c.speed<2){n.heading=null;n.ready=false;n.fix=fix;n.message='停車中は直前の向きを保ちます。手動でも方向を選べます。';updateFlowUI();return;}
+  let course=Number.isFinite(c.heading)&&c.heading>=0&&c.heading<360&&Number.isFinite(c.speed)&&c.speed>=2?{heading:c.heading,speed:c.speed}:C.courseBetween(n.fix,fix);
+  if(course){n.heading=course.heading;n.headingAt=performance.now();n.fix=fix;}else if(!n.fix||fix.at-n.fix.at>45000)n.fix=fix;
+  n.message=course?'GPSを取得しました。コンパスと照合しています。':'GPSの移動方向を待っています。前・後・左・右も選べます。';updateFlowUI();
+ }
+ function onPositionError(e){if(state.nav.mode!=='auto')return;state.nav.ready=false;state.nav.heading=null;if(e.code===1){stopAutomatic();toast('位置情報を許可すると自動推定できます。方向を選んでも遊べます。');}else{state.nav.message='位置情報を受け取れません。前・後・左・右を選んで遊べます。';updateFlowUI();}}
+ async function enableAutomatic(){
+  const n=state.nav;if(n.requesting)return;if(n.mode==='auto'){stopAutomatic();return;}n.requesting=true;updateFlowUI();
+  try{if(!window.isSecureContext)throw new Error('自動推定はSafariで公開URLを開いてください。');if(!navigator.geolocation||!window.DeviceOrientationEvent)throw new Error('この端末では自動推定できません。方向を選んで遊べます。');
+   if(typeof DeviceOrientationEvent.requestPermission==='function'&&await DeviceOrientationEvent.requestPermission(true)!=='granted')throw new Error('向きへのアクセスを許可すると自動推定できます。方向を選んでも遊べます。');
+   n.mode='auto';n.ready=false;n.pose=null;n.heading=null;n.fix=null;n.pending=null;n.message='位置情報とコンパスの取得待ち。前・後・左・右も選べます。';window.addEventListener('deviceorientation',onOrientation);window.addEventListener('deviceorientationabsolute',onOrientation);
+   n.watch=navigator.geolocation.watchPosition(onPosition,onPositionError,{enableHighAccuracy:true,maximumAge:0,timeout:12000});$('directionDialog').close();
+  }catch(e){stopAutomatic();toast(e.message);}finally{n.requesting=false;updateFlowUI();}
+ }
+ $('autoDirection').addEventListener('click',enableAutomatic);$('autoDirectionDialog').addEventListener('click',enableAutomatic);window.addEventListener('pagehide',stopAutomatic);
+ function updateNavigation(now){
+  const n=state.nav;if(n.mode!=='auto'||portraitBlocked())return;
+  if(n.heading===null||!n.pose||now-n.headingAt>20000||now-n.poseAt>15000){n.ready=false;n.pending=null;if(n.heading!==null)n.message=!n.pose?'GPSを取得しました。コンパスの取得待ちです。':'信号が途切れたので直前の方向を保ちます。手動でも選べます。';return;}
+  const v=C.relativeCourse(n.heading,n.pose,screenAngle()),flow=C.flowFor(v,state.flow);if(!flow){n.ready=false;n.pending=null;n.message='iPhoneを横向きに持つか、方向を選んでください。';return;}
+  n.ready=true;n.message='自動：'+FLOW[state.flow].hint;if(flow===state.flow){n.pending=null;return;}if(n.pending!==flow){n.pending=flow;n.pendingAt=now;return;}if(now-n.pendingAt>=1200){setFlow(flow,true);n.pending=null;n.message='自動：'+FLOW[flow].hint;updateFlowUI();}
+ }
  function validVector(v){return v&&[v.x,v.y,v.z].every(Number.isFinite);}
  function onMotion(e){
   const now=performance.now(),s=state.sensor;const hasLinear=validVector(e.acceleration),hasG=validVector(e.accelerationIncludingGravity);
@@ -155,7 +239,7 @@ window.MotionCore = (()=>{
   if(state.phase!=='idle')return;if(portraitBlocked()){toast('iPhoneを横向きにしてプレイしてください。');return;}const a=$('sensorStart'),b=$('demoStart');a.disabled=true;b.disabled=true;if(source==='sensor')a.textContent='CONNECTING…';
   try{initAudio();const audioReady=audio.resume(),sensorsReady=source==='sensor'?enableSensors():Promise.resolve();await Promise.all([audioReady,sensorsReady]);if(audio.state!=='running')throw new Error('音を再生できませんでした。もう一度タップしてください。');
    if(portraitBlocked())throw new Error('iPhoneを横向きにして、もう一度PLAYしてください。');state.source=source;state.notes=C.chart('easy',16);state.phase='playing';state.inputs.clear();state.filtered={x:0,y:0};state.cue={x:0,y:0};state.score=0;state.combo=0;state.maxCombo=0;state.perfect=0;state.good=0;state.miss=0;state.hitFx=[];state.chartTime=-.18;state.startAt=audio.currentTime+.18;audioStep=0;audioNote=0;
-   $('startScreen').hidden=true;$('pauseScreen').hidden=true;$('pauseBtn').disabled=false;$('stopBtn').disabled=false;document.body.classList.add('playing');$('inputBadge').textContent=source==='sensor'?'MOTION ON':'DEMO MODE';$('judgment').classList.remove('on');resize();master.gain.value=.24;scheduler=setInterval(schedule,25);schedule();requestWake();
+   $('startScreen').hidden=true;$('pauseScreen').hidden=true;$('pauseBtn').disabled=false;$('stopBtn').disabled=false;document.body.classList.add('playing');updateFlowUI();$('judgment').classList.remove('on');resize();master.gain.value=.24;scheduler=setInterval(schedule,25);schedule();requestWake();
   }catch(e){toast(e.message);}finally{a.disabled=false;b.disabled=false;a.textContent='PLAY';}
  }
  $('sensorStart').addEventListener('click',()=>start('sensor'));$('demoStart').addEventListener('click',()=>start('demo'));
@@ -172,7 +256,7 @@ window.MotionCore = (()=>{
  function release(id){const lane=state.inputs.get(id);state.inputs.delete(id);if(lane===undefined||lanePressed(lane))return;pads[lane].classList.remove('pressed');if(state.phase!=='playing')return;state.chartTime=clock();const n=state.notes.find(n=>n.lane===lane&&n.status==='holding');if(n)completeNote(n,state.chartTime>=n.end-.10?n.quality:'miss');}
  function clearInputs(){state.inputs.clear();pads.forEach(p=>p.classList.remove('pressed'));}
  pads.forEach(p=>{p.addEventListener('pointerdown',e=>{e.preventDefault();p.setPointerCapture(e.pointerId);press(Number(p.dataset.lane),'p'+e.pointerId);});for(const event of ['pointerup','pointercancel','lostpointercapture'])p.addEventListener(event,e=>release('p'+e.pointerId));});
- canvas.addEventListener('pointerdown',e=>{if(state.phase!=='playing')return;const r=canvas.getBoundingClientRect(),f=C.field(state.w,state.h),x=e.clientX-r.left,y=e.clientY-r.top;if(x<f.judgeX-32||y<f.top||y>f.bottom)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);press(C.clamp(Math.floor((y-f.top)/f.laneHeight),0,3),'p'+e.pointerId);});for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>release('p'+e.pointerId));
+ canvas.addEventListener('pointerdown',e=>{if(state.phase!=='playing')return;const r=canvas.getBoundingClientRect(),f=C.field(state.w,state.h,state.flow),x=e.clientX-r.left,y=e.clientY-r.top,along=f.horizontal?x:y,across=f.horizontal?y:x;if((along-f.target)*f.sign< -32||across<f.crossStart||across>f.crossStart+f.laneSize*4)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);press(C.clamp(Math.floor((across-f.crossStart)/f.laneSize),0,3),'p'+e.pointerId);});for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>release('p'+e.pointerId));
  const keys={KeyD:0,KeyF:1,KeyJ:2,KeyK:3};window.addEventListener('keydown',e=>{if(state.phase!=='playing'||e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;if(Object.hasOwn(keys,e.code)){e.preventDefault();press(keys[e.code],'k'+e.code);}else if(e.code==='Escape'||e.code==='Space'){e.preventDefault();pause();}});window.addEventListener('keyup',e=>{if(Object.hasOwn(keys,e.code))release('k'+e.code);});
  function pause(reason='準備ができたら、続きから。'){if(state.phase!=='playing')return;state.chartTime=clock();state.phase='paused';clearInputs();if(audio.state==='running')audio.suspend().catch(()=>{});$('pauseReason').textContent=reason;$('pauseScreen').hidden=false;$('pauseBtn').disabled=true;releaseWake();}
  async function resume(){if(state.phase!=='paused')return;if(portraitBlocked()){toast('横画面に戻すと再開できます。');return;}if(state.source==='sensor'&&performance.now()-state.sensor.last>1000){toast('iPhoneの動きを受け取れていません。Safariで開き直すか、プレイを終了してください。');return;}try{await audio.resume();if(audio.state!=='running')throw new Error('音を再開できませんでした。');state.phase='playing';for(const n of state.notes)if(n.status==='holding')n.grace=clock()+.4;$('pauseScreen').hidden=true;$('pauseBtn').disabled=false;requestWake();}catch(e){toast(e.message);}}
@@ -180,40 +264,47 @@ window.MotionCore = (()=>{
  document.addEventListener('visibilitychange',()=>{if(document.hidden)pause('画面を離れたため、一時停止しました。');});window.addEventListener('blur',()=>{if(state.phase==='playing')pause('画面を離れたため、一時停止しました。');});
  function finish(complete){
   if(!['playing','paused'].includes(state.phase))return;stopAudio();releaseWake();clearInputs();state.phase='idle';$('pauseScreen').hidden=true;$('startScreen').hidden=false;$('pauseBtn').disabled=true;$('stopBtn').disabled=true;$('countdown').textContent='';document.body.classList.remove('playing');
-  const accuracy=state.score/(state.notes.length*1000)*100,newBest=state.score>state.best;state.best=Math.max(state.best,state.score);state.latest={score:state.score,completed:complete,accuracy,combo:state.maxCombo,perfect:state.perfect,good:state.good,miss:state.miss,source:state.source};
+  const accuracy=state.score/(state.notes.length*1000)*100,newBest=state.score>state.best;state.best=Math.max(state.best,state.score);state.latest={score:state.score,completed:complete,accuracy,combo:state.maxCombo,perfect:state.perfect,good:state.good,miss:state.miss,source:state.source,flow:state.flow};
   $('resultTitle').textContent=complete?'TRACK COMPLETE':'PLAY STOPPED';$('resultGrade').textContent=!complete?'—':accuracy>=99?'S':accuracy>=90?'A':accuracy>=80?'B':accuracy>=70?'C':'D';$('resultBadge').textContent=complete&&state.perfect===state.notes.length?'ALL PERFECT':complete&&state.miss===0?'FULL COMBO':newBest?'NEW BEST':'TRANSIT / EASY';$('resultScore').textContent=String(state.score).padStart(7,'0');$('resultAccuracy').textContent=accuracy.toFixed(1)+'%';$('resultCombo').textContent=state.maxCombo;$('resultPerfect').textContent=state.perfect;$('resultGood').textContent=state.good;$('resultMiss').textContent=state.miss;$('bestScore').textContent=String(state.best).padStart(7,'0');$('resultInfo').textContent=complete?(state.source==='sensor'?'MOTION ON':'DEMO MODE'):'曲の途中で終了しました';$('resultDialog').showModal();resize();
  }
  $('againBtn').addEventListener('click',()=>{$('resultDialog').close();return start(state.source);});$('menuBtn').addEventListener('click',()=>$('resultDialog').close());
  function demo(t){return {x:1.2*Math.sin(t*.63)+.65*Math.sin(t*.21),y:.95*Math.sin(t*.38)+.4*Math.sin(t*1.05),valid:true};}
- function updateMotion(t,dt){let p;if(state.source==='sensor'){const s=state.sensor,angle=screen.orientation?.angle??window.orientation??0;p=C.project(s.raw,s.gravity,Number(angle),'horizontal');if(!s.hasGravity||performance.now()-s.last>1000)p={x:0,y:0,valid:false};}else p=demo(t);state.projected=p;const f=1-Math.exp(-dt/.18);state.filtered.x+=(p.x-state.filtered.x)*f;state.filtered.y+=(p.y-state.filtered.y)*f;state.cue=C.cue(state.filtered,state.w,state.h,SETTINGS.gain,1);const field=C.field(state.w,state.h),limitX=(field.judgeX-field.startX)*.085,limitY=field.laneHeight*.18;state.cue.x=C.clamp(state.cue.x,-limitX,limitX);state.cue.y=C.clamp(state.cue.y,-limitY,limitY);}
+ function updateMotion(t,dt){let p;if(state.source==='sensor'){const s=state.sensor;p=C.project(s.raw,s.gravity,screenAngle(),'horizontal');if(!s.hasGravity||performance.now()-s.last>1000)p={x:0,y:0,valid:false};}else p=demo(t);state.projected=p;const f=1-Math.exp(-dt/.18);state.filtered.x+=(p.x-state.filtered.x)*f;state.filtered.y+=(p.y-state.filtered.y)*f;state.cue=C.cue(state.filtered,state.w,state.h,SETTINGS.gain,1);const field=C.field(state.w,state.h,state.flow),along=field.length*.085,across=field.laneSize*.18,limitX=field.horizontal?along:across,limitY=field.horizontal?across:along;state.cue.x=C.clamp(state.cue.x,-limitX,limitX);state.cue.y=C.clamp(state.cue.y,-limitY,limitY);}
  function line(points,color,width=1){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
  function draw(t,now){
-  const w=state.w,h=state.h,c=state.cue,f=C.field(w,h),{top,bottom,laneHeight,judgeX}=f,noteHeight=Math.min(laneHeight*.62,42);ctx.clearRect(0,0,w,h);
-  for(let lane=0;lane<4;lane++){const y=top+lane*laneHeight;ctx.fillStyle=lane%2?'#b5a5ff09':'#83e9f408';ctx.fillRect(0,y,judgeX+12,laneHeight);if(lanePressed(lane)){const glow=ctx.createLinearGradient(judgeX-150,0,judgeX+20,0);glow.addColorStop(0,colors[lane]+'00');glow.addColorStop(1,colors[lane]+'28');ctx.fillStyle=glow;ctx.fillRect(judgeX-150,y,175,laneHeight);}}
-  for(let rail=0;rail<=4;rail++){const y=top+rail*laneHeight;line([{x:0,y},{x:judgeX+12,y}],rail===0||rail===4?'#5e507b':'#3b3154',1);}
-  for(let i=1;i<8;i++){const x=f.startX+(judgeX-f.startX)*i/8;line([{x,y:top},{x,y:bottom}],'#b3abff0d');}
-  line([{x:judgeX,y:top},{x:judgeX,y:bottom}],'#efe9ff',2);line([{x:judgeX+3,y:top},{x:judgeX+3,y:bottom}],'#b3abff35',5);
-  for(let lane=0;lane<4;lane++){const y=top+laneHeight*(lane+.5);ctx.fillStyle=colors[lane];ctx.fillRect(judgeX-2,y-noteHeight/2,4,noteHeight);}
-  const live=state.phase!=='idle',notes=live?state.notes:previewChart,current=live?t:2+t%8;
-  ctx.save();ctx.beginPath();ctx.rect(0,top,w-96,bottom-top);ctx.clip();
-  for(const n of notes){if(n.status==='done'||n.status==='missed')continue;const remaining=n.time-current,tail=n.end-current;if(remaining>state.travel+.15||tail<-.3)continue;const p=1-remaining/state.travel;let pt=C.point(n.lane,p,w,h,c,'notes');
-   if(n.hold){const endP=1-tail/state.travel,startP=n.status==='holding'?1:p,points=[];for(let j=0;j<=14;j++)points.push(C.point(n.lane,endP+(startP-endP)*j/14,w,h,c,'notes'));line(points,colors[n.lane]+'50',noteHeight*.58);line(points,colors[n.lane]+'b0',2);const endPt=C.point(n.lane,endP,w,h,c,'notes');ctx.fillStyle=colors[n.lane]+'bc';ctx.fillRect(endPt.x-3,endPt.y-noteHeight*.35,6,noteHeight*.7);if(n.status==='holding')pt=C.point(n.lane,1,w,h,c,'notes');}
-   if((p<-.1||p>1.14)&&n.status!=='holding')continue;ctx.globalAlpha=live?1:.45;ctx.shadowBlur=12;ctx.shadowColor=colors[n.lane]+'66';ctx.fillStyle=colors[n.lane];ctx.fillRect(pt.x-6,pt.y-noteHeight/2,12,noteHeight);ctx.shadowBlur=0;ctx.fillStyle='#ffffffb0';ctx.fillRect(pt.x-6,pt.y-noteHeight/2+1,2,noteHeight-2);ctx.globalAlpha=1;
-  }ctx.restore();
-  state.hitFx=state.hitFx.filter(fx=>now-fx.at<260);for(const fx of state.hitFx){const a=(now-fx.at)/260,y=top+laneHeight*(fx.lane+.5);ctx.globalAlpha=(1-a)*.6;ctx.strokeStyle=colors[fx.lane];ctx.lineWidth=2;ctx.strokeRect(judgeX-5-a*12,y-noteHeight/2-a*10,10+a*24,noteHeight+a*20);ctx.globalAlpha=1;}
+  const w=state.w,h=state.h,c=state.cue,f=C.field(w,h,state.flow),crossEnd=f.crossStart+f.laneSize*4,noteSpan=Math.min(f.laneSize*.62,f.horizontal?42:90);ctx.clearRect(0,0,w,h);
+  const rect=(along,across,a,b)=>{const p=C.xy(f,along,across);ctx.fillRect(p.x,p.y,f.horizontal?a:b,f.horizontal?b:a);};
+  const noteRect=(pt,along,across)=>ctx.fillRect(pt.x-(f.horizontal?along:across)/2,pt.y-(f.horizontal?across:along)/2,f.horizontal?along:across,f.horizontal?across:along);
+  for(let lane=0;lane<4;lane++){
+   const across=f.crossStart+lane*f.laneSize;ctx.fillStyle=lane%2?'#b5a5ff09':'#83e9f408';rect(f.low,across,f.high-f.low,f.laneSize);
+   if(lanePressed(lane)){const a=C.xy(f,f.target-150*f.sign,0),b=C.xy(f,f.target+20*f.sign,0),glow=ctx.createLinearGradient(a.x,a.y,b.x,b.y);glow.addColorStop(0,colors[lane]+'00');glow.addColorStop(1,colors[lane]+'28');ctx.fillStyle=glow;rect(Math.min(f.target-150*f.sign,f.target+20*f.sign),across,170,f.laneSize);}
+  }
+  for(let rail=0;rail<=4;rail++){const across=f.crossStart+rail*f.laneSize;line([C.xy(f,f.low,across),C.xy(f,f.high,across)],rail===0||rail===4?'#5e507b':'#3b3154',1);}
+  for(let i=1;i<8;i++){const along=f.start+(f.target-f.start)*i/8;line([C.xy(f,along,f.crossStart),C.xy(f,along,crossEnd)],'#b3abff0d');}
+  line([C.xy(f,f.target,f.crossStart),C.xy(f,f.target,crossEnd)],'#efe9ff',2);line([C.xy(f,f.target+3*f.sign,f.crossStart),C.xy(f,f.target+3*f.sign,crossEnd)],'#b3abff35',5);
+  for(let lane=0;lane<4;lane++){ctx.fillStyle=colors[lane];noteRect(C.point(lane,1,w,h,c,'notes',state.flow),4,noteSpan);}
+  const live=state.phase!=='idle',notes=live?state.notes:previewChart,current=live?t:2+t%8,clip=C.xy(f,f.low,f.crossStart);
+  ctx.save();ctx.beginPath();ctx.rect(clip.x,clip.y,f.horizontal?f.high-f.low:f.laneSize*4,f.horizontal?f.laneSize*4:f.high-f.low);ctx.clip();
+  for(const n of notes){
+   if(n.status==='done'||n.status==='missed')continue;const remaining=n.time-current,tail=n.end-current;if(remaining>state.travel+.15||tail<-.3)continue;const p=1-remaining/state.travel;let pt=C.point(n.lane,p,w,h,c,'notes',state.flow);
+   if(n.hold){const endP=1-tail/state.travel,startP=n.status==='holding'?1:p,points=[];for(let j=0;j<=14;j++)points.push(C.point(n.lane,endP+(startP-endP)*j/14,w,h,c,'notes',state.flow));line(points,colors[n.lane]+'50',noteSpan*.58);line(points,colors[n.lane]+'b0',2);ctx.fillStyle=colors[n.lane]+'bc';noteRect(C.point(n.lane,endP,w,h,c,'notes',state.flow),6,noteSpan*.7);if(n.status==='holding')pt=C.point(n.lane,1,w,h,c,'notes',state.flow);}
+   if((p<-.1||p>1.14)&&n.status!=='holding')continue;ctx.globalAlpha=live?1:.45;ctx.shadowBlur=12;ctx.shadowColor=colors[n.lane]+'66';ctx.fillStyle=colors[n.lane];noteRect(pt,12,noteSpan);ctx.shadowBlur=0;ctx.fillStyle='#ffffffb0';const highlight=f.horizontal?{x:pt.x-5*f.sign,y:pt.y}:{x:pt.x,y:pt.y-5*f.sign};noteRect(highlight,2,noteSpan-2);ctx.globalAlpha=1;
+  }
+  ctx.restore();state.hitFx=state.hitFx.filter(fx=>now-fx.at<260);
+  for(const fx of state.hitFx){const a=(now-fx.at)/260,pt=C.point(fx.lane,1,w,h,c,'notes',state.flow),along=10+a*24,across=noteSpan+a*20;ctx.globalAlpha=(1-a)*.6;ctx.strokeStyle=colors[fx.lane];ctx.lineWidth=2;ctx.strokeRect(pt.x-(f.horizontal?along:across)/2,pt.y-(f.horizontal?across:along)/2,f.horizontal?along:across,f.horizontal?across:along);ctx.globalAlpha=1;}
  }
  function frame(now){
-  const dt=C.clamp((now-state.lastFrame)/1000||.016,.001,.1);state.lastFrame=now;const t=state.phase==='idle'?now/1000:state.phase==='paused'?state.chartTime:clock();if(state.phase==='playing')state.chartTime=t;if(state.phase!=='paused')updateMotion(t,dt);
+  const dt=C.clamp((now-state.lastFrame)/1000||.016,.001,.1);state.lastFrame=now;updateNavigation(now);const t=state.phase==='idle'?now/1000:state.phase==='paused'?state.chartTime:clock();if(state.phase==='playing')state.chartTime=t;if(state.phase!=='paused')updateMotion(t,dt);
   if(state.phase==='playing'){if(state.source==='sensor'&&now-state.sensor.last>1300)pause('iPhoneの動きを受け取れないため、一時停止しました。');else{for(const n of state.notes){if(n.status==='pending'&&t-n.time>.15)completeNote(n,'miss');else if(n.status==='holding'){if(t>=n.end)completeNote(n,n.quality);else if(!lanePressed(n.lane)&&(!n.grace||t>n.grace))completeNote(n,'miss');}}if(t>34.28)finish(true);}}
   draw(t,now);if(now>state.judgeUntil)$('judgment').classList.remove('on');
-  if(now-state.lastUI>100){state.lastUI=now;$('score').textContent=String(state.score).padStart(7,'0');$('combo').textContent=state.combo;const progress=state.phase==='idle'?0:C.clamp((t-2)/32,0,1);$('progressFill').style.width=progress*100+'%';$('progressTrack').setAttribute('aria-valuenow',String(Math.round(progress*100)));$('timeLabel').textContent=state.phase==='idle'?'32 s':Math.max(0,Math.ceil(32-Math.max(0,t-2)))+' s';if(state.phase==='playing'&&t>=0&&t<2){const count=Math.ceil((2-t)/.5);$('countdown').textContent=count===1?'GO':String(count-1);}else $('countdown').textContent='';}
+  if(now-state.lastUI>100){state.lastUI=now;updateFlowUI();$('score').textContent=String(state.score).padStart(7,'0');$('combo').textContent=state.combo;const progress=state.phase==='idle'?0:C.clamp((t-2)/32,0,1);$('progressFill').style.width=progress*100+'%';$('progressTrack').setAttribute('aria-valuenow',String(Math.round(progress*100)));$('timeLabel').textContent=state.phase==='idle'?'32 s':Math.max(0,Math.ceil(32-Math.max(0,t-2)))+' s';if(state.phase==='playing'&&t>=0&&t<2){const count=Math.ceil((2-t)/.5);$('countdown').textContent=count===1?'GO':String(count-1);}else $('countdown').textContent='';}
   requestAnimationFrame(frame);
  }
  function download(text,name,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
  $('downloadBtn').addEventListener('click',async()=>{try{const r=await fetch(location.href,{cache:'no-store'});if(!r.ok)throw new Error();const original=await r.text();if(!original.includes('id="motion-core"'))throw new Error();download(original,'motion-beat.html','text/html;charset=utf-8');toast('HTMLを保存しました。');}catch{toast('保存できませんでした。公開URLから開いてお試しください。');}});
  $('aboutBtn').addEventListener('click',()=>{if(state.phase==='playing')pause();$('aboutDialog').showModal();});for(const b of document.querySelectorAll('[data-close]'))b.addEventListener('click',()=>$(b.dataset.close).close());
- const mc=document.modelContext;if(mc?.registerTool){const lifecycle=new AbortController();window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});try{Promise.resolve(mc.registerTool({name:'get_motion_beat_state',description:'ゲームの進行状態と直近のプレイ結果を読み取る。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({phase:state.phase,source:state.source,config:{...SETTINGS},motion:{x:state.cue.x,y:state.cue.y,valid:state.projected.valid},latest:state.latest?{...state.latest}:null,best:state.best})},{signal:lifecycle.signal})).catch(()=>{});}catch{}}
- resize();requestAnimationFrame(frame);
+ const mc=document.modelContext;if(mc?.registerTool){const lifecycle=new AbortController();window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});try{Promise.resolve(mc.registerTool({name:'get_motion_beat_state',description:'ゲームの進行状態と直近のプレイ結果を読み取る。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({phase:state.phase,source:state.source,config:{...SETTINGS,flow:state.flow},navigation:{mode:state.nav.mode,ready:state.nav.ready,status:state.nav.message},motion:{x:state.cue.x,y:state.cue.y,valid:state.projected.valid},latest:state.latest?{...state.latest}:null,best:state.best})},{signal:lifecycle.signal})).catch(()=>{});}catch{}}
+ resize();updateFlowUI();requestAnimationFrame(frame);
 })();
 
 </script>
